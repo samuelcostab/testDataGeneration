@@ -1,16 +1,10 @@
-def insertionSort(arr): 
-  
-    # Traverse through 1 to len(arr) 
-    for i in range(1, len(arr)): 
-  
-        key = arr[i] 
-  
-        # Move elements of arr[0..i-1], that are 
-        # greater than key, to one position ahead 
-        # of their current position 
-        j = i-1
-        while j >=0 and key < arr[j] : 
-                arr[j+1] = arr[j] 
-                j -= 1
-        arr[j+1] = key 
+def calcular_pagamento(qtd_horas, valor_hora):
+  horas = float(qtd_horas)
+  taxa = float(valor_hora)
+  if horas <= 40:
+    salario=horas*taxa
+  else:
+    h_excd = horas - 40
+    salario = 40*taxa+(h_excd*(1.5*taxa))
+  return salario 
             

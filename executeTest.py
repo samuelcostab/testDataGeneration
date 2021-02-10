@@ -5,12 +5,9 @@ if __name__ == '__main__':
 
     elem = dir(foo)
     n_ele = []
-    print(elem)
     for i in elem:
         if callable(getattr(foo, i)):
-            print(type(getattr(foo, i).__name__))
-            '''coloca o nome da funcao a ser testada '''
-            if getattr(foo, i).__name__ == "insertionSort": 
+            if getattr(foo, i).__name__ != sys.argv[0]:
                 n_ele.append(getattr(foo, i))
 
     test_result = ""

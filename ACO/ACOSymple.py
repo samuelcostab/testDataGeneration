@@ -4,8 +4,8 @@ from random import randint
 import matplotlib.pyplot as plt
 import networkx as nx
 
-N = 5
-NUM_ANTS = 10
+N = 7 #num de pontos que existirão para as formigas iniciarem
+NUM_ANTS = 1 #num que multiplicará a qtd de nós para obter as formigas iniciarem 1*X Formigas
 
 def solve_tsp(G, ants, N, num_max_iterations=100, evaporation_rate=0.7):
     # do iterations for tsp
@@ -13,7 +13,7 @@ def solve_tsp(G, ants, N, num_max_iterations=100, evaporation_rate=0.7):
     for iters in range(num_max_iterations):
         path_dict = {}
         for ant in ants:
-            ant.reset(N)
+            ant.reset(list(G.nodes)[0])
         for i in range(0, N):
             # since there are N cities, each ant will take exactly N iterations
             # to complete it's tour
@@ -34,9 +34,8 @@ def solve_tsp(G, ants, N, num_max_iterations=100, evaporation_rate=0.7):
             else:
                 path_dict[p] = 0
             ant.update_pheromone(G)
-    # print(path_dict)
+    
     return path_dict
-
 
 class Ant(object):
     def __init__(self, start_points, PH=100, eps=0.1):
@@ -45,15 +44,14 @@ class Ant(object):
         self.path_length = 0
         # this is the pheromone that this ant will deposit over the length of its path
         self.PHEROMONE = PH
-        k = randint(0, start_points)
-        print(k)
-        self.path.append(k)  # this ant starts at node k
+        #k = randint(0, start_points)
+        self.path.append(start_points)  # this ant starts at initial node
         self.eps = eps 		# epsilon value to help discriminate between choosing randomly
 
-    def reset(self, num_start_points):
+    def reset(self, start_point):
         self.path = []
-        k = np.random.randint(0, num_start_points)
-        self.path.append(k)
+        #k = np.random.randint(0, num_start_points)
+        self.path.append(start_point)
         self.path_length = 0
 
     def completed_tour(self, N):
@@ -61,12 +59,10 @@ class Ant(object):
             return True
         return False
 
-    def choose_next(self, graph, N):
-       
+    def choose_next(self, graph, N):    
         last_visited = self.path[-1]
         to_consider = []
         for neigbour in graph.neighbors(last_visited):
-            
             if neigbour not in self.path:
                 cost = graph.edges()[last_visited, neigbour]['pheromone']
                 to_consider.append((cost, neigbour))
@@ -77,7 +73,6 @@ class Ant(object):
                 # Choose randomly
                 k = np.random.randint(0, len(to_consider))
                 self.path.append(to_consider[k][1])
-
             else:
                 to_consider.sort()
                 self.path.append(to_consider[0][1])
@@ -86,11 +81,10 @@ class Ant(object):
             # move out randomly
             x = list(graph.neighbors(last_visited))
             if len(x) == 0:
-                print('Bad Luck')
+                #print('Bad Luck')
                 return
             t = np.random.randint(0, len(x))
             self.path.append(x[t])
-
         else:
             self.path.append(self.path[0])
 
@@ -119,65 +113,58 @@ class Ant(object):
     def get_path(self):
         x = ""
         for i in self.path:
-            x = x + str(i) + ", "
-        return x
+            x += i + ", "
 
+        return x
 
 def createGraph(listaNos):
     # Essa listaNos vem la do arquivo Runner.py aonde consegui importar o ACOSymple para pode usar a metaeuristica
     # com o grafo que ja foi gerado a partir da leitura do arquivo desejado
-
     graph = nx.DiGraph()  # Digrafo = Grafo Orientado
 
+    print("Lista de Nos",listaNos)
+
     for no in (listaNos):  # criar grafo para usar na metaheuristica
-        graph.add_node(no.getTipoLinha())  # adiciona um no ao novo grafo
-        ##print('filho de')
+        graph.add_node(no.getTipoLinha()) # adiciona um no ao novo grafo
         for pai in no.getPais():
             try:
                 graph.add_node(pai.getTipoLinha())
                 graph.add_edge(pai.getTipoLinha(), no.getTipoLinha())
             except (AttributeError):
-                print("(Ninguem)")
+                print("Ninguem", AttributeError)
 
-    main(num=1, graph_type=graph, show=True, save=False)
+    #nx.draw(graph, with_labels=True) #construe o grafo visualmente
+    #plt.show() #exibe o grafo
+    for i in range(1,10):
+        main(num=1,evaporation_rate=1.0, graph_type=graph,num_iters=100, show=False, save=False)
 
-    #nx.draw(graph, with_labels=True)
-    # plt.show()
-
-
-def main(num=0, evaporation_rate=0.7, graph_type=None, num_iters=100, show=True, save=True):
+def main(num=0, evaporation_rate=0.7, graph_type=None, num_iters=1000, show=True, save=True):
     print('For Experiment {}'.format(num))
-
     N = graph_type.number_of_nodes()
-
-   # Initialize ants
-    ants = []
-    for i in range(0, NUM_ANTS):
-        ants.append(Ant(N))
 
     # Initalize graph
     if not graph_type:
-        print("Entrou foi no IF")
         G = nx.complete_graph(N)
     else:
         G = graph_type
-    pos = nx.spring_layout(G)
-    
-    #nx.draw(G, with_labels=True, font_weight='bold')
-    #plt.show()
 
     for edge in G.edges():
-        G.edges()[edge]['weight'] = np.random.randint(5, 20)
-        G.edges()[edge]['pheromone'] = 1
+        G.edges()[edge]['weight'] = np.random.randint(5, 20) #add peso as arestas
+        G.edges()[edge]['pheromone'] = 1 #add feromonio a aresta
+        
+    # Initialize ants
+    ants = []
+    for i in range(0, NUM_ANTS * N):
+        ants.append(Ant(list(G.nodes)[0])) #cria formiga no ponto inicial do grafo
 
-   
+    pos = nx.spring_layout(G)
     # Perform ACO
     paths = solve_tsp(G, ants, N, num_max_iterations=num_iters,evaporation_rate=evaporation_rate)
-
-    # print(paths)
+    
+    print(paths)
     converted = []
     for path in paths:
-        p = tuple(map(lambda x: int(x.strip()), path.split(',')[:-1]))
+        p = tuple(map(lambda x: str(x.strip()), path.split(',')[:-1])) ##Error aqui
         converted.append((paths[path], p))
     converted.sort()
     top_path = converted[-1]
