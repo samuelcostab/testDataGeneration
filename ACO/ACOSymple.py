@@ -7,6 +7,7 @@ import networkx as nx
 N = 7 #num de pontos que existirão para as formigas iniciarem
 NUM_ANTS = 1 #num que multiplicará a qtd de nós para obter as formigas iniciarem 1*X Formigas
 
+
 def solve_tsp(G, ants, N, num_max_iterations=100, evaporation_rate=0.7):
     # do iterations for tsp
     path_dict = {}
@@ -44,7 +45,6 @@ class Ant(object):
         self.path_length = 0
         # this is the pheromone that this ant will deposit over the length of its path
         self.PHEROMONE = PH
-        #k = randint(0, start_points)
         self.path.append(start_points)  # this ant starts at initial node
         self.eps = eps 		# epsilon value to help discriminate between choosing randomly
 
@@ -117,29 +117,93 @@ class Ant(object):
 
         return x
 
+
+def calculateCyclomaticComplexity(graph):
+    numNodes = graph.number_of_nodes()
+    numEdges = graph.number_of_edges()
+    return (numEdges - numNodes) + 2
+
 def createGraph(listaNos):
     # Essa listaNos vem la do arquivo Runner.py aonde consegui importar o ACOSymple para pode usar a metaeuristica
     # com o grafo que ja foi gerado a partir da leitura do arquivo desejado
-    graph = nx.DiGraph()  # Digrafo = Grafo Orientado
 
-    print("Lista de Nos",listaNos)
+    graph = nx.DiGraph(nx.nx_agraph.read_dot('g1.dot')) #lendo Grafo a partir do CFG static
 
-    for no in (listaNos):  # criar grafo para usar na metaheuristica
-        graph.add_node(no.getTipoLinha()) # adiciona um no ao novo grafo
-        for pai in no.getPais():
-            try:
-                graph.add_node(pai.getTipoLinha())
-                graph.add_edge(pai.getTipoLinha(), no.getTipoLinha())
-            except (AttributeError):
-                print("Ninguem", AttributeError)
+    listaNos = dict(graph.nodes()) # retorna bloco (chave) valor (linha de código)
 
-    #nx.draw(graph, with_labels=True) #construe o grafo visualmente
-    #plt.show() #exibe o grafo
-    for i in range(1,10):
-        main(num=1,evaporation_rate=1.0, graph_type=graph,num_iters=100, show=False, save=False)
+    cc = calculateCyclomaticComplexity(graph)
+    PATHS = [dict.fromkeys(list(graph.nodes()),0), []] #lista do dicionario + caminhos
+    paths = []
+    stop = False
+    nextTurn = True
+    time = 0
+    lastTimes = [100] #primeiros 3 times
+    bestTime = 100
+    consecutive = 0
+    finalPaths = []
+    while(not stop):
+        while (nextTurn):#enquanto proximoVez é TRUE, calcula os caminhos
+            paths = main(num=1,evaporation_rate=1.0, graph_type=graph,num_iters=100, show=True, save=False)
+            PATHS, nextTurn = verifyPathsAndStop(PATHS=PATHS, newPaths=paths, cc=cc)
+            time += 1
+            
+        if(time < bestTime):
+            bestTime = time
+            
+        if(bestTime == lastTimes[-1]):
+            consecutive += 1
+        else: 
+            consecutive = 0
 
-def main(num=0, evaporation_rate=0.7, graph_type=None, num_iters=1000, show=True, save=True):
-    print('For Experiment {}'.format(num))
+        lastTimes.append(time)
+        if(consecutive == 3):
+            stop = True
+            finalPaths= PATHS
+
+        print('\nTime:',time,  'bestTime:', bestTime)
+        for item in PATHS:
+            print('\n',item)
+
+        nextTurn = True #Seta a descoberta dos caminhos apta para rodar novamente
+        time = 1
+        PATHS = [dict.fromkeys(list(graph.nodes()),0), []] #lista do dicionario + caminhos
+        paths = []
+
+    return [finalPaths, listaNos]
+
+
+def obtainPathInArray(pathToSplit):
+    path = []
+    confidence, pathTuple = pathToSplit #separa os atributos da tupla
+    for p in pathTuple: #para cada step na tupla é adicionado um indice
+        path.append(p)
+    
+    return path
+
+def calculateStop(array):
+    qtdTotal = 0
+    nodeNotVisited = False
+    '''for key in array: #atualiza a
+        qtdTotal += array[key]'''
+    for key in array:
+        if(array[key] == 0):#Se existe algum nó ainda não visitado
+            nodeNotVisited = True
+    
+    if(nodeNotVisited):
+        return True
+    return False
+
+def verifyPathsAndStop(PATHS=[], newPaths=[], cc=1):   
+    for p in newPaths:
+        path = obtainPathInArray(p)
+        for node in path:
+            if(node in PATHS[0]): #para cada nó encontrado no caminho adiciona 1 ao valor do nó no dicionario
+                PATHS[0][node] = PATHS[0][node] + 1
+        PATHS[1].append(path)
+   
+    return PATHS,calculateStop(PATHS[0])
+
+def main(num=0, evaporation_rate=0.7, graph_type=None, num_iters=1000, show=False, save=False):
     N = graph_type.number_of_nodes()
 
     # Initalize graph
@@ -151,7 +215,7 @@ def main(num=0, evaporation_rate=0.7, graph_type=None, num_iters=1000, show=True
     for edge in G.edges():
         G.edges()[edge]['weight'] = np.random.randint(5, 20) #add peso as arestas
         G.edges()[edge]['pheromone'] = 1 #add feromonio a aresta
-        
+
     # Initialize ants
     ants = []
     for i in range(0, NUM_ANTS * N):
@@ -160,16 +224,15 @@ def main(num=0, evaporation_rate=0.7, graph_type=None, num_iters=1000, show=True
     pos = nx.spring_layout(G)
     # Perform ACO
     paths = solve_tsp(G, ants, N, num_max_iterations=num_iters,evaporation_rate=evaporation_rate)
-    
-    print(paths)
     converted = []
     for path in paths:
-        p = tuple(map(lambda x: str(x.strip()), path.split(',')[:-1])) ##Error aqui
+        p = tuple(map(lambda x: str(x.strip()), path.split(',')[:-1]))
         converted.append((paths[path], p))
     converted.sort()
     top_path = converted[-1]
-    print('Top Path = ', top_path[1], 'Confidence = ', top_path[0]/NUM_ANTS)
-
+    #print('Top Path = ', top_path[0], 'Confidence = ', top_path[0]/NUM_ANTS)
+    #print('caminhos convertidos', converted)
+    '''
     edge_list = []
     for k in range(1, len(top_path[1])):
         edge_list.append((top_path[1][k-1], top_path[1][k]))
@@ -193,8 +256,9 @@ def main(num=0, evaporation_rate=0.7, graph_type=None, num_iters=1000, show=True
         plt.show()
     if save:
         plt.savefig('Figure_{}'.format(num))
+    '''
 
-    return top_path[0]
+    return converted
 
 
 if __name__ == '__main__':

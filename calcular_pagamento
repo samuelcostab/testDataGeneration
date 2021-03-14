@@ -1,0 +1,24 @@
+// CFG
+digraph {
+	<no.No object at 0x7f5372ccfd30> [label="calcular_pagamento
+L: 1
+"]
+	<no.No object at 0x7f5372ccfd68> [label="If
+L: 4
+"]
+	<no.No object at 0x7f5372ccfda0> [label="Assign
+L: 5
+"]
+	<no.No object at 0x7f5372ccfdd8> [label="Assign
+L: 9
+"]
+	<no.No object at 0x7f5372ccfe10> [label="Return
+L: 11
+" style=bold]
+	<no.No object at 0x7f5372ccfd30> -> <no.No object at 0x7f5372ccfd68>
+	<no.No object at 0x7f5372ccfd68> -> <no.No object at 0x7f5372ccfda0>
+	<no.No object at 0x7f5372ccfd68> -> <no.No object at 0x7f5372ccfdd8>
+	<no.No object at 0x7f5372ccfdd8> -> <no.No object at 0x7f5372ccfe10>
+	"Test results:
+	 " [shape=box]
+}

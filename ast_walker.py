@@ -14,7 +14,8 @@ class Ast_walker(ast.NodeVisitor):
         self.generic_visit(node)
 
     def visit_FunctionDef(self, node):
-        novoNo = self.grafo.criaNo(node.name, node.lineno)
+
+        novoNo = self.grafo.criaNo(node.name, node.lineno, node)
         lastNode = None
         caminhoInvalido = None
 
@@ -70,15 +71,14 @@ class Ast_walker(ast.NodeVisitor):
         Os nós correspondentes a esses campos ficam dentro deles (são listas).
         *Ajuste para pegar o orelse certo, necessita de mais testes
         '''
-
         novoNos = []
-        novoNo = self.grafo.criaNo("If", node.lineno)
+        novoNo = self.grafo.criaNo("If", node.lineno, node)
         self.grafo.defCampo("body")
         caminhoInvalido = False
         lastNode = None
         novoNo2 = None
         if not node.body:
-            novoNos.append(self.grafo.criaNo("bodyVazio", node.lineno))
+            novoNos.append(self.grafo.criaNo("bodyVazio", node.lineno, node))
         if node.body:
             notTransicao = None
             for no in node.body:
@@ -127,7 +127,7 @@ class Ast_walker(ast.NodeVisitor):
         self.grafo.defCampo("orelse")
         caminhoInvalido = False
         if not node.orelse:
-            novoNos.append(self.grafo.criaNo("orelseVazioIf", node.lineno))
+            novoNos.append(self.grafo.criaNo("orelseVazioIf", node.lineno, node))
 
         if node.orelse:
             #orelse pode ter tamanho maior que 1?
@@ -176,34 +176,34 @@ class Ast_walker(ast.NodeVisitor):
     def visit_Pass(self, node):
         '''
         '''
-        novoNo = self.grafo.criaNo("Pass", node.lineno)
+        novoNo = self.grafo.criaNo("Pass", node.lineno, node)
         novoNo.temFilho = False
         return novoNo
 
     def visit_Assign(self, node):
         '''
         '''
-        novoNo = self.grafo.criaNo("Assign", node.lineno)
+        novoNo = self.grafo.criaNo("Assign", node.lineno, node)
         return novoNo
 
     def visit_Continue(self, node):
         '''
         '''
-        novoNo = self.grafo.criaNo("Continue", node.lineno)
+        novoNo = self.grafo.criaNo("Continue", node.lineno, node)
         novoNo.temFilho = False
         return novoNo
 
     def visit_Break(self, node):
         '''
         '''
-        novoNo = self.grafo.criaNo("Break", node.lineno)
+        novoNo = self.grafo.criaNo("Break", node.lineno, node)
         novoNo.temFilho = False
         return novoNo
 
     def visit_Return(self, node):
         '''
         '''
-        novoNo = self.grafo.criaNo("Return", node.lineno)
+        novoNo = self.grafo.criaNo("Return", node.lineno, node)
         novoNo.temFilho = False
         return novoNo
 
@@ -211,26 +211,26 @@ class Ast_walker(ast.NodeVisitor):
         '''
         '''
         novoNo1 = None
-        novoNo = self.grafo.criaNo("TryFinally", node.lineno)
+        novoNo = self.grafo.criaNo("TryFinally", node.lineno, node)
 
         notTransicao = None
         caminhoInvalido = False
         lastNode = None
         self.grafo.defCampo("body")
         if not node.body:
-            self.grafo.criaNo("bodyVazio", node.lineno)
+            self.grafo.criaNo("bodyVazio", node.lineno, node)
         if node.body:
             for no in node.body:
                 novoNo1 = self.visit(no)
         if (type(novoNo1) is list and type(novoNo1[1]) is list):
             novoNo1 = novoNo1[1]
         if not node.finalbody:
-            self.grafo.criaNo("bodyVazio", node.lineno)
+            self.grafo.criaNo("bodyVazio", node.lineno, node)
         finallyNode = None
         caminhoInvalido = False
         lastNode = None
         if node.finalbody:
-            finallyNode = self.grafo.criaNo("Finally", node.lineno)
+            finallyNode = self.grafo.criaNo("Finally", node.lineno, node)
             for no in node.finalbody:
                 if type(no).__name__ not in self.grafo.getTipos():
                     notTransicao = no
@@ -283,14 +283,14 @@ class Ast_walker(ast.NodeVisitor):
         '''
         '''
         handlerList = []
-        novoNo = self.grafo.criaNo("TryExcept", node.lineno)
+        novoNo = self.grafo.criaNo("TryExcept", node.lineno, node)
         novoNo1 = None
         lastNode = None
         notTransicao = None
         lastNode = None
         caminhoInvalido = False
         if not node.body:
-            self.grafo.criaNo("bodyVazio", node.lineno)
+            self.grafo.criaNo("bodyVazio", node.lineno, node)
         if node.body:
             for no in node.body:
                 if type(no).__name__ not in self.grafo.getTipos():
@@ -338,12 +338,12 @@ class Ast_walker(ast.NodeVisitor):
 
         #novoNo.setPai(lastNode)
         '''if not node.orelse:
-            self.grafo.criaNo("orElseVazioTryExcept", node.lineno)'''
+            self.grafo.criaNo("orElseVazioTryExcept", node.lineno, node)'''
         if node.orelse:
             for no in node.orelse:
                 self.visit(no)
         if not node.handlers:
-            self.grafo.criaNo("handlerVazio", node.lineno)
+            self.grafo.criaNo("handlerVazio", node.lineno, node)
         '''if type(novoNo1) is list:
             if novoNo1[0] in self.grafo.getTipos() and novoNo1[0].getTipo() != "Except" and len(novoNo1)>1:
                 novoNo1.pop(0)
@@ -375,7 +375,7 @@ class Ast_walker(ast.NodeVisitor):
     def visit_ExceptHandler(self, node):
         '''
         '''
-        novoNo = self.grafo.criaNo("Except", node.lineno)
+        novoNo = self.grafo.criaNo("Except", node.lineno, node)
         lastNode = None
         caminhoInvalido = False
         if node.body:
@@ -417,21 +417,20 @@ class Ast_walker(ast.NodeVisitor):
                 lastNode.setSignInvalido(True)
 
         if not node.body:
-            self.grafo.criaNo("bodyVazio", node.lineno)
+            self.grafo.criaNo("bodyVazio", node.lineno, node)
         return [novoNo, lastNode]
 
     def visit_For(self, node):
         '''Visita do for: o último filho do body é pai do for atual,
         orelse suportado, sendo assim, o for atual caso tenha um else associado se torna pai do mesmo
         elses executados apenas se não houver nenhum break no for'''
-
-        novoNo = self.grafo.criaNo("For", node.lineno)
+        novoNo = self.grafo.criaNo("For", node.lineno, node)
         lastNode = None
         caminhoInvalido = False
         notTransicao = None
         self.grafo.defCampo("bodyFor")
         if not node.body:
-            lastNode = self.grafo.criaNo("bodyVazio", node.lineno)
+            lastNode = self.grafo.criaNo("bodyVazio", node.lineno, node)
 
         if node.body:
             notTransicao = None
@@ -520,14 +519,13 @@ class Ast_walker(ast.NodeVisitor):
                 orelse suportado, sendo assim, o for atual caso tenha um else associado se torna pai do mesmo
                 elses executados apenas se não houver nenhum break no while'''
 
-
-        novoNo = self.grafo.criaNo("While", node.lineno)
+        novoNo = self.grafo.criaNo("While", node.lineno, node)
         lastNode = None
         caminhoInvalido = False
         notTransicao = None
         self.grafo.defCampo("bodyFor")
         if not node.body:
-            lastNode = self.grafo.criaNo("bodyVazio", node.lineno)
+            lastNode = self.grafo.criaNo("bodyVazio", node.lineno, node)
 
         if node.body:
             notTransicao = None
@@ -611,17 +609,16 @@ class Ast_walker(ast.NodeVisitor):
         self.grafo.defCampo("fimOrelseFor")
         return novoNo
 
-
     def visit_With(self, node):
         '''
         '''
-        novoNo = self.grafo.criaNo("With", node.lineno)
+        novoNo = self.grafo.criaNo("With", node.lineno, node)
         lastNode = None
         caminhoInvalido = False
         notTransicao = None
         self.grafo.defCampo("body")
         if not node.body:
-            lastNode = self.grafo.criaNo("bodyVazio", node.lineno)
+            lastNode = self.grafo.criaNo("bodyVazio", node.lineno, node)
         if node.body:
             notTransicao = None
             for no in node.body:
@@ -668,18 +665,14 @@ class Ast_walker(ast.NodeVisitor):
         self.grafo.defCampo("fimOrelse")
         return lastNode
 
-
     def generic_visit(self, node):
         '''
         Nós de tipos cujas visitas não tiverem sido redefinidas
         pelos métodos acima serão visitadas por esse método.
         '''
-
         lineno = -1
         if hasattr(node, "lineno"):
             lineno = node.lineno
-        novoNo = self.grafo.criaNo(type(node).__name__, lineno)
+        novoNo = self.grafo.criaNo(type(node).__name__, lineno, node)
         ast.NodeVisitor.generic_visit(self, node)
         return novoNo
-
-

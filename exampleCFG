@@ -1,0 +1,26 @@
+digraph "clusterfoo.py" {
+	graph [label="foo.py"]
+	1 [label="def calcular_pagamento(qtd_horas, valor_hora):...
+"]
+	subgraph clustercalcular_pagamento {
+		graph [label=calcular_pagamento]
+		3 [label="horas = float(qtd_horas)
+taxa = float(valor_hora)
+if horas <= 40:
+"]
+		"3_calls" [label="float
+float" shape=box]
+		3 -> "3_calls" [label=calls style=dashed]
+		4 [label="salario = horas * taxa
+"]
+		5 [label="return salario
+"]
+		4 -> 5 [label=""]
+		3 -> 4 [label="horas <= 40"]
+		6 [label="h_excd = horas - 40
+salario = 40 * taxa + h_excd * (1.5 * taxa)
+"]
+		6 -> 5 [label=""]
+		3 -> 6 [label="(horas > 40)"]
+	}
+}

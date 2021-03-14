@@ -4,7 +4,7 @@
 
 class No(object):
 
-    def __init__(self, tipo, numLinha):
+    def __init__(self, tipo, numLinha, node):
         self.tipo = tipo
         self.numLinha = numLinha
         self.pais = []
@@ -13,6 +13,7 @@ class No(object):
         self.sign = False
         self.signInvalido = 0
         self.filho = []
+        self.node = node
     
     def setPai(self, pais):
         if type(pais) is list:

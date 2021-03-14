@@ -97,7 +97,7 @@ class Grafo:
     def getTipos(self):
         return self.tiposNo
 
-    def criaNo(self, tipo, numlinha):
+    def criaNo(self, tipo, numlinha, node):
         """
         Cria no apenas se ele mudar o fluxo do programa, para que
         no se repitam nos seguidos que nao alterem o fluxo;
@@ -108,7 +108,7 @@ class Grafo:
         if (not self.verificador(tipo)):
             pass  # se nao altera fluxo, ignora no da ast e nao cria no grafo
         else:
-            no = No(tipo, numlinha)
+            no = No(tipo, numlinha, node)
             self.defPai(no)
             self.numNos += 1
             self.listaNos.append(no)

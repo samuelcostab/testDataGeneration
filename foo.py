@@ -6,5 +6,4 @@ def calcular_pagamento(qtd_horas, valor_hora):
   else:
     h_excd = horas - 40
     salario = 40*taxa+(h_excd*(1.5*taxa))
-  return salario 
-            
+  return salario
