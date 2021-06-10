@@ -125,7 +125,6 @@ def calculateCyclomaticComplexity(graph):
 
 def createGraph(listaNos):
     # Essa listaNos vem la do arquivo Runner.py aonde consegui importar o ACOSymple para pode usar a metaeuristica
-    # com o grafo que ja foi gerado a partir da leitura do arquivo desejado
 
     graph = nx.DiGraph(nx.nx_agraph.read_dot('g1.dot')) #lendo Grafo a partir do CFG static
     listaNos = dict(graph.nodes()) # retorna bloco (chave) valor (linha de código)
