@@ -1,14 +1,14 @@
 if __name__ == '__main__':
     from ast_walker import *
     from runner import *
-    import foo
+    import gcd
 
-    elem = dir(foo)
+    elem = dir(gcd)
     n_ele = []
     for i in elem:
-        if callable(getattr(foo, i)):
-            if getattr(foo, i).__name__ != sys.argv[0]:
-                n_ele.append(getattr(foo, i))
+        if callable(getattr(gcd, i)):
+            if getattr(gcd, i).__name__ != sys.argv[0]:
+                n_ele.append(getattr(gcd, i))
 
     test_result = ""
 

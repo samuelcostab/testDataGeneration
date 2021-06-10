@@ -1,19 +1,43 @@
-digraph "clusterfoo.py" {
-		graph [label=calcular_pagamento]
-		3 [label="horas = float(qtd_horas)
-taxa = float(valor_hora)
-if horas <= 40:
+digraph "clustergcd.py" {
+		graph [label=gcd]
+		3 [label="a, b, tmp
+a = value1
+b = value2
+if a < 0:
 "]
-		4 [label="salario = horas * taxa
+		4 [label="a = -a
 "]
-		5 [label="return salario
+		5 [label="if b < 0:
 "]
+		6 [label="b = -b
+"]
+		7 [label="if a == 0 | b == 0:
+"]
+		8 [label="print('The input values must be greater than zero\n')
+return
+"]
+		"8_calls" [label=print shape=box]
+		8 -> "8_calls" [label=calls style=dashed]
+		7 -> 8 [label="a == 0 | b == 0"]
+		9 [label="while b > 0:
+"]
+		11 [label="tmp = a % b
+a = b
+b = tmp
+"]
+		11 -> 9 [label=""]
+		9 -> 11 [label="b > 0"]
+		12 [label="print('Result: %i\n', a)
+"]
+		"12_calls" [label=print shape=box]
+		12 -> "12_calls" [label=calls style=dashed]
+		9 -> 12 [label="(b <= 0)"]
+		7 -> 9 [label="(a != 0 | b)"]
+		6 -> 7 [label=""]
+		5 -> 6 [label="b < 0"]
+		5 -> 7 [label="(b >= 0)"]
 		4 -> 5 [label=""]
-		3 -> 4 [label="horas <= 40"]
-		6 [label="h_excd = horas - 40
-salario = 40 * taxa + h_excd * (1.5 * taxa)
-"]
-		6 -> 5 [label=""]
-		3 -> 6 [label="(horas > 40)"]
+		3 -> 4 [label="a < 0"]
+		3 -> 5 [label="(a >= 0)"]
 	}
 }

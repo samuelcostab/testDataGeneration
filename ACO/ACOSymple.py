@@ -128,7 +128,6 @@ def createGraph(listaNos):
     # com o grafo que ja foi gerado a partir da leitura do arquivo desejado
 
     graph = nx.DiGraph(nx.nx_agraph.read_dot('g1.dot')) #lendo Grafo a partir do CFG static
-
     listaNos = dict(graph.nodes()) # retorna bloco (chave) valor (linha de código)
 
     cc = calculateCyclomaticComplexity(graph)
@@ -144,6 +143,7 @@ def createGraph(listaNos):
     while(not stop):
         while (nextTurn):#enquanto proximoVez é TRUE, calcula os caminhos
             paths = main(num=1,evaporation_rate=1.0, graph_type=graph,num_iters=100, show=True, save=False)
+            print(paths)
             PATHS, nextTurn = verifyPathsAndStop(PATHS=PATHS, newPaths=paths, cc=cc)
             time += 1
             
@@ -161,8 +161,10 @@ def createGraph(listaNos):
             finalPaths= PATHS
 
         print('\nTime:',time,  'bestTime:', bestTime)
+        ii = 0
         for item in PATHS:
-            print('\n',item)
+            ii += 1
+            print('\n',ii,'-',item)
 
         nextTurn = True #Seta a descoberta dos caminhos apta para rodar novamente
         time = 1
