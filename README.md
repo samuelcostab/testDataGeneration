@@ -1,13 +1,6 @@
-# python-cfg
-Gera um grafo de fluxo de controle a partir de um código fonte em python. Ainda em processo de desenvolvimento.
-
-
-1.Instale graphviz;
-
-2.Instale o graphviz para python:
-
-pip install graphviz
-
-3.Altere a função foo em ast-walker e execute ast-walker.py.
+# TCC-Geração de Caminhos Independentes de um GFC
+- Executa tudo no arquivo executeTest.py com o comando "python3 executeTest.py"
+- Ao analisar nova função, lembrar de alterar o nome do arquivo em runner.py e executeTest.py
+- Ao gerar o arquivo g1.dot, lembrar de retirar o primeiro nó de "declaração" para não entrar no loop infinito
 
 

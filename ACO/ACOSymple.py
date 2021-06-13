@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import networkx as nx
 
 N = 7 #num de pontos que existirão para as formigas iniciarem
-NUM_ANTS = 1 #num que multiplicará a qtd de nós para obter as formigas iniciarem 1*X Formigas
+NUM_ANTS = 2 #num que multiplicará a qtd de nós para obter as formigas iniciarem 1*X Formigas
 
 
 def solve_tsp(G, ants, N, num_max_iterations=100, evaporation_rate=0.7):
@@ -136,13 +136,12 @@ def createGraph(listaNos):
     nextTurn = True
     time = 0
     lastTimes = [100] #primeiros 3 times
-    bestTime = 100
+    bestTime = 150
     consecutive = 0
     finalPaths = []
     while(not stop):
         while (nextTurn):#enquanto proximoVez é TRUE, calcula os caminhos
-            paths = main(num=1,evaporation_rate=1.0, graph_type=graph,num_iters=100, show=True, save=False)
-            print(paths)
+            paths = main(num=1,evaporation_rate=2.0, graph_type=graph,num_iters=1000, show=True, save=False)
             PATHS, nextTurn = verifyPathsAndStop(PATHS=PATHS, newPaths=paths, cc=cc)
             time += 1
             
@@ -172,7 +171,6 @@ def createGraph(listaNos):
 
     return [finalPaths, listaNos]
 
-
 def obtainPathInArray(pathToSplit):
     path = []
     confidence, pathTuple = pathToSplit #separa os atributos da tupla
@@ -184,8 +182,6 @@ def obtainPathInArray(pathToSplit):
 def calculateStop(array):
     qtdTotal = 0
     nodeNotVisited = False
-    '''for key in array: #atualiza a
-        qtdTotal += array[key]'''
     for key in array:
         if(array[key] == 0):#Se existe algum nó ainda não visitado
             nodeNotVisited = True
