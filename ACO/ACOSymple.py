@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import networkx as nx
 
 N = 7 #num de pontos que existirão para as formigas iniciarem
-NUM_ANTS = 2 #num que multiplicará a qtd de nós para obter as formigas iniciarem 1*X Formigas
+NUM_ANTS = 1 #num que multiplicará a qtd de nós para obter as formigas iniciarem 1*X Formigas
 
 
 def solve_tsp(G, ants, N, num_max_iterations=100, evaporation_rate=0.7):
@@ -141,7 +141,7 @@ def createGraph(listaNos):
     finalPaths = []
     while(not stop):
         while (nextTurn):#enquanto proximoVez é TRUE, calcula os caminhos
-            paths = main(num=1,evaporation_rate=2.0, graph_type=graph,num_iters=1000, show=True, save=False)
+            paths = main(num=1,evaporation_rate=2.0, graph_type=graph,num_iters=100, show=True, save=False)
             PATHS, nextTurn = verifyPathsAndStop(PATHS=PATHS, newPaths=paths, cc=cc)
             time += 1
             

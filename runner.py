@@ -21,12 +21,12 @@ def runner(nomeFunc, mainString, testResult, fun_name):
     grafo = Grafo()
     codeAst = ast.parse(inspect.getsource(nomeFunc))
     
-    cfg = CFGBuilder().build_from_file('triang.py', './triang.py')
+    cfg = CFGBuilder().build_from_file('foo.py', './foo.py')
     grafo = cfg._build_visual()
     # grafo.render(filename='g1.dot') #O Render so vai ser executado na primeira vez da função, após isso deve comenta-lo.
     paths = ACOSymple.createGraph(grafo)
 
-    dataGenerator(paths, ast.dump(codeAst))
+    #dataGenerator(paths, ast.dump(codeAst))
     
     #del grafo
     

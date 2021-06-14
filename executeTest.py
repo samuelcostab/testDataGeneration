@@ -1,14 +1,14 @@
 if __name__ == '__main__':
     from ast_walker import *
     from runner import *
-    import triang
+    import foo
 
-    elem = dir(triang)
+    elem = dir(foo)
     n_ele = []
     for i in elem:
-        if callable(getattr(triang, i)):
-            if getattr(triang, i).__name__ != sys.argv[0]:
-                n_ele.append(getattr(triang, i))
+        if callable(getattr(foo, i)):
+            if getattr(foo, i).__name__ != sys.argv[0]:
+                n_ele.append(getattr(foo, i))
 
     test_result = ""
 
