@@ -19,11 +19,11 @@ def runner(nomeFunc, mainString, testResult, fun_name):
 
     #funções utilizada: calcular_pagamento.py, gcd.py, triang.py
     grafo = Grafo()
-    codeAst = ast.parse(inspect.getsource(nomeFunc))
+    #codeAst = ast.parse(inspect.getsource(nomeFunc))
     
     cfg = CFGBuilder().build_from_file('foo.py', './foo.py')
     grafo = cfg._build_visual()
-    # grafo.render(filename='g1.dot') #O Render so vai ser executado na primeira vez da função, após isso deve comenta-lo.
+    #grafo.render(filename='g1Bessj.dot') #O Render so vai ser executado na primeira vez da função, após isso deve comenta-lo.
     paths = ACOSymple.createGraph(grafo)
 
     #dataGenerator(paths, ast.dump(codeAst))

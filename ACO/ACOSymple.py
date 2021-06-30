@@ -3,6 +3,7 @@ import numpy as np
 from random import randint
 import matplotlib.pyplot as plt
 import networkx as nx
+import datetime
 
 N = 7 #num de pontos que existirão para as formigas iniciarem
 NUM_ANTS = 1 #num que multiplicará a qtd de nós para obter as formigas iniciarem 1*X Formigas
@@ -126,7 +127,7 @@ def calculateCyclomaticComplexity(graph):
 def createGraph(listaNos):
     # Essa listaNos vem la do arquivo Runner.py aonde consegui importar o ACOSymple para pode usar a metaeuristica
 
-    graph = nx.DiGraph(nx.nx_agraph.read_dot('g1.dot')) #lendo Grafo a partir do CFG static
+    graph = nx.DiGraph(nx.nx_agraph.read_dot('g1GCD.dot')) #lendo Grafo a partir do CFG static
     listaNos = dict(graph.nodes()) # retorna bloco (chave) valor (linha de código)
 
     cc = calculateCyclomaticComplexity(graph)
@@ -139,12 +140,14 @@ def createGraph(listaNos):
     bestTime = 150
     consecutive = 0
     finalPaths = []
+    initialTime = datetime.datetime.now()
     while(not stop):
         while (nextTurn):#enquanto proximoVez é TRUE, calcula os caminhos
-            paths = main(num=1,evaporation_rate=2.0, graph_type=graph,num_iters=100, show=True, save=False)
+            paths = main(evaporation_rate=0.3, graph_type=graph,num_iters=100, show=True, save=False)
             PATHS, nextTurn = verifyPathsAndStop(PATHS=PATHS, newPaths=paths, cc=cc)
             time += 1
-            
+        finalTime = datetime.datetime.now()
+
         if(time < bestTime):
             bestTime = time
             
@@ -158,7 +161,7 @@ def createGraph(listaNos):
             stop = True
             finalPaths= PATHS
 
-        print('\nTime:',time,  'bestTime:', bestTime)
+        print('\nTime:',time,  'bestTime:', bestTime, 'cc', cc, 'time', (finalTime.timestamp() - initialTime.timestamp()))
         ii = 0
         for item in PATHS:
             ii += 1
@@ -215,7 +218,7 @@ def main(num=0, evaporation_rate=0.7, graph_type=None, num_iters=1000, show=Fals
 
     # Initialize ants
     ants = []
-    for i in range(0, NUM_ANTS * N):
+    for i in range(0, 100):
         ants.append(Ant(list(G.nodes)[0])) #cria formiga no ponto inicial do grafo
 
     pos = nx.spring_layout(G)
@@ -229,31 +232,6 @@ def main(num=0, evaporation_rate=0.7, graph_type=None, num_iters=1000, show=Fals
     top_path = converted[-1]
     #print('Top Path = ', top_path[0], 'Confidence = ', top_path[0]/NUM_ANTS)
     #print('caminhos convertidos', converted)
-    '''
-    edge_list = []
-    for k in range(1, len(top_path[1])):
-        edge_list.append((top_path[1][k-1], top_path[1][k]))
-
-    for edge in G.edges():
-        print(edge, G.edges()[edge]['weight'], G.edges()[edge]['pheromone'])
-
-    labels = {}
-    for node in G.nodes():
-        labels[node] = node
-
-    print(nx.to_numpy_matrix(G))
-    plt.figure()
-
-    nx.draw_networkx_nodes(G, pos)
-    nx.draw_networkx_edges(G, pos, edge_color='r')
-    nx.draw_networkx_edges(G, pos, edgelist=edge_list, edge_color='b')
-    nx.draw_networkx_labels(G, pos, labels, font_size=16)
-
-    if show:
-        plt.show()
-    if save:
-        plt.savefig('Figure_{}'.format(num))
-    '''
 
     return converted
 
